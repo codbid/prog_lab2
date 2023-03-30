@@ -111,6 +111,8 @@ int int_vector_reserve(IntVector *v, size_t new_capacity)
         if ( v->data ) {
             int_vector_free(vector_backup);
             v->capacity = new_capacity;
+            for ( size_t i = int_vector_get_size(v); i < int_vector_get_capacity(v) + 1; i++)
+                *(v->data + (size_t)i) = 0;
             return 0;
         }
         v->data = vector_backup->data;

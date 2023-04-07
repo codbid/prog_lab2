@@ -92,14 +92,18 @@ int int_vector_resize(IntVector *v, size_t new_size)
 {
     int *data_backup = calloc(v->capacity, sizeof(int));
     memcpy(data_backup, v->data, v->capacity * sizeof(int));
-    if ( new_size >= v->size )
+    if ( new_size > v->size )
     {
         size_t old_size = v->size;
         for (int i = 0; i < new_size - old_size; i++)
             int_vector_push_back(v, 0);
-    } else if ( new_size < v->size )
+    } else if ( new_size < v->size ) {
         while ( v->size > new_size )
             int_vector_pop_back(v);
+        } else {
+            free(data_backup);
+            return 0;
+        }
     if ( v->data ) {
         free(data_backup);
         return 0;

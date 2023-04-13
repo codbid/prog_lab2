@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "IntVector.h"
+#include <IntVector.h>
 //#include <windows.h>
 #include <locale.h>
 int main()

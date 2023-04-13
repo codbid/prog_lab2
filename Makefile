@@ -1,2 +1,47 @@
-any:
-	gcc -Wall -o main src/*.c
+CC = gcc
+CFLAGS = -Wall -Werror -Isrc/libintvector -MMD
+TARGET = bin/intvector
+OBJDIR = obj
+SRCDIR = src
+
+SRC_INTVECTOR_DIR = $(SRCDIR)/intvector
+SRC_LIBINTVECTOR_DIR = $(SRCDIR)/libintvector
+OBJ_INTVECTOR_DIR = $(OBJDIR)/intvector
+OBJ_LIBINTVECTOR_DIR = $(OBJDIR)/libintvector
+
+SRC_INTVECTOR = $(wildcard $(SRC_INTVECTOR_DIR)/*.c)
+OBJ_INTVECTOR = $(patsubst $(SRC_INTVECTOR_DIR)/%.c, $(OBJ_INTVECTOR_DIR)/%.o, $(SRC_INTVECTOR))
+DEP_INTVECTOR = $(OBJ_INTVECTOR:.o=.d)
+
+SRC_LIBINTVECTOR = $(wildcard $(SRC_LIBINTVECTOR_DIR)/*.c)
+OBJ_LIBINTVECTOR = $(patsubst $(SRC_LIBINTVECTOR_DIR)/%.c, $(OBJ_LIBINTVECTOR_DIR)/%.o, $(SRC_LIBINTVECTOR))
+DEP_LIBINTVECTOR = $(OBJ_LIBINTVECTOR:.o=.d)
+
+INTVECTOROBJS = $(OBJ_INTVECTOR_DIR)/main.o
+LIBOBJS = $(OBJ_LIBINTVECTOR_DIR)/IntVector.o
+LIBNAME = $(OBJ_LIBINTVECTOR_DIR)/IntVector.a
+
+.PHONY: all clean clean_all
+
+all: $(TARGET)
+
+$(TARGET): $(INTVECTOROBJS) $(LIBNAME)
+	$(CC) $^ -o $@
+
+$(OBJ_INTVECTOR_DIR)/%.o: $(SRC_INTVECTOR_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_LIBINTVECTOR_DIR)/%.o: $(SRC_LIBINTVECTOR_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(LIBNAME): $(LIBOBJS)
+	ar rcs $@ $^
+
+-include $(DEP_INTVECTOR)
+-include $(DEP_LIBINTVECTOR)
+
+clean:
+	$(RM) -r $(OBJ_INTVECTOR_DIR)/* $(OBJ_LIBINTVECTOR_DIR)/* $(LIBNAME)
+
+clean_all:
+	$(RM) -r $(OBJ_INTVECTOR_DIR)/* $(OBJ_LIBINTVECTOR_DIR)/* $(TARGET) $(LIBNAME)
